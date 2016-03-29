@@ -1,0 +1,10 @@
+D:\TestProject\QuartzService\QuartzService.Config\obj\Debug\QuartzService.Config.csprojResolveAssemblyReference.cache
+D:\TestProject\QuartzService\QuartzService.Config\bin\Debug\QuartzService.Config.dll
+D:\TestProject\QuartzService\QuartzService.Config\bin\Debug\QuartzService.Config.pdb
+D:\TestProject\QuartzService\QuartzService.Config\obj\Debug\QuartzService.Config.dll
+D:\TestProject\QuartzService\QuartzService.Config\obj\Debug\QuartzService.Config.pdb
+D:\Github\QuartzService\QuartzService.Config\bin\Debug\QuartzService.Config.dll
+D:\Github\QuartzService\QuartzService.Config\bin\Debug\QuartzService.Config.pdb
+D:\Github\QuartzService\QuartzService.Config\obj\Debug\QuartzService.Config.csprojResolveAssemblyReference.cache
+D:\Github\QuartzService\QuartzService.Config\obj\Debug\QuartzService.Config.dll
+D:\Github\QuartzService\QuartzService.Config\obj\Debug\QuartzService.Config.pdb

@@ -1,0 +1,69 @@
+﻿@using QuartzService.Web.Models
+@using Quartz
+@{
+
+    Layout = null;
+    var Schedulers = SchedulerManager.Instance.Schedulers;
+}
+
+
+
+@foreach (var scheduler in Schedulers)
+{
+    <table class="table table-bordered" style="margin-top:20px;">
+        <colgroup span="4" style="width:25%;"></colgroup>
+        <thead>
+            <tr style="background:#ccc;" schid="@scheduler.SchedulerId" schname="@scheduler.SchedulerName">
+                <th>@scheduler.SchedulerName</th>
+                <th><span class="label label-default">@scheduler.Status</span></th>
+                <th colspan="2">
+                    @if (scheduler.Status == SchedulerStatus.Stop)
+                    {
+                        <button class="btn btn-default" cmdstart>运行</button>
+                    }
+                    @if (scheduler.Status == SchedulerStatus.Running)
+                    {
+                        <button class="btn btn-default" cmdstop>停止</button>
+                    }
+                    @if (scheduler.Status == SchedulerStatus.ProcessRunning)
+                    {
+                        <button class="btn btn-default" cmdkill>强制关闭</button>
+                    }
+                    @if (scheduler.Status == SchedulerStatus.Stop)
+                    {
+                        <button class="btn btn-default" cmdupload>更新程序</button>
+                    }
+                </th>
+            </tr>
+            <tr>
+                <th>GroupName</th>
+                <th>JobName</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (scheduler.Jobs != null)
+            {
+                foreach (var job in scheduler.Jobs)
+                {
+                    <tr>
+                        <td>@job.GroupName</td>
+                        <td>@job.JobName</td>
+                        <td>@job.Status</td>
+                        <td>
+                            @if (job.Status != TriggerState.Paused)
+                            {
+                                <button class="btn btn-default" cmdpausejob schid="@scheduler.SchedulerId" groupname="@job.GroupName" jobname="@job.JobName">暂停</button>
+                            }
+                            @if (job.Status == TriggerState.Paused)
+                            {
+                                <button class="btn btn-default" cmdresumejob schid="@scheduler.SchedulerId" groupname="@job.GroupName" jobname="@job.JobName">继续</button>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+}

@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuartzService.Web", "QuartzService.Web\QuartzService.Web.csproj", "{C2A354CB-35DD-455D-BE90-B2ECAD2E0AEC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuartzService", "QuartzService\QuartzService.csproj", "{5533EF98-8FCA-4D69-A8F6-EA784AD5AE21}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuartzService.DB", "QuartzService.DB\QuartzService.DB.csproj", "{98B1B79D-B17C-4E98-A733-7328BF0AA36A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CronService", "CronService\CronService.csproj", "{D64E82AC-56CD-4D5C-A200-F20ED1F16FF2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service.Impl", "Service.Impl\Service.Impl.csproj", "{D4346D79-43A8-40A5-964A-CE707A686359}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuartzService.Config", "QuartzService.Config\QuartzService.Config.csproj", "{6AFC5C19-95E8-4DAE-A9F3-EAFF090E1DC0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C2A354CB-35DD-455D-BE90-B2ECAD2E0AEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2A354CB-35DD-455D-BE90-B2ECAD2E0AEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2A354CB-35DD-455D-BE90-B2ECAD2E0AEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2A354CB-35DD-455D-BE90-B2ECAD2E0AEC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5533EF98-8FCA-4D69-A8F6-EA784AD5AE21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5533EF98-8FCA-4D69-A8F6-EA784AD5AE21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5533EF98-8FCA-4D69-A8F6-EA784AD5AE21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5533EF98-8FCA-4D69-A8F6-EA784AD5AE21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98B1B79D-B17C-4E98-A733-7328BF0AA36A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98B1B79D-B17C-4E98-A733-7328BF0AA36A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98B1B79D-B17C-4E98-A733-7328BF0AA36A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98B1B79D-B17C-4E98-A733-7328BF0AA36A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D64E82AC-56CD-4D5C-A200-F20ED1F16FF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D64E82AC-56CD-4D5C-A200-F20ED1F16FF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D64E82AC-56CD-4D5C-A200-F20ED1F16FF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D64E82AC-56CD-4D5C-A200-F20ED1F16FF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4346D79-43A8-40A5-964A-CE707A686359}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4346D79-43A8-40A5-964A-CE707A686359}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4346D79-43A8-40A5-964A-CE707A686359}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4346D79-43A8-40A5-964A-CE707A686359}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AFC5C19-95E8-4DAE-A9F3-EAFF090E1DC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AFC5C19-95E8-4DAE-A9F3-EAFF090E1DC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AFC5C19-95E8-4DAE-A9F3-EAFF090E1DC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AFC5C19-95E8-4DAE-A9F3-EAFF090E1DC0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

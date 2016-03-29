@@ -1,0 +1,4 @@
+D:\TestProject\QuartzService\Service.Impl\bin\Debug\Service.Impl.dll
+D:\TestProject\QuartzService\Service.Impl\bin\Debug\Service.Impl.pdb
+D:\TestProject\QuartzService\Service.Impl\obj\Debug\Service.Impl.dll
+D:\TestProject\QuartzService\Service.Impl\obj\Debug\Service.Impl.pdb

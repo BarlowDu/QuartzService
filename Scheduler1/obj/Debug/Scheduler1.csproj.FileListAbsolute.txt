@@ -1,0 +1,15 @@
+D:\TestProject\QuartzService\Scheduler1\bin\Debug\Scheduler1.exe.config
+D:\TestProject\QuartzService\Scheduler1\bin\Debug\Scheduler1.exe
+D:\TestProject\QuartzService\Scheduler1\bin\Debug\Scheduler1.pdb
+D:\TestProject\QuartzService\Scheduler1\obj\Debug\Scheduler1.exe
+D:\TestProject\QuartzService\Scheduler1\obj\Debug\Scheduler1.pdb
+D:\TestProject\QuartzService\Scheduler1\bin\Debug\Common.Logging.Core.dll
+D:\TestProject\QuartzService\Scheduler1\bin\Debug\Common.Logging.dll
+D:\TestProject\QuartzService\Scheduler1\bin\Debug\Quartz.dll
+D:\TestProject\QuartzService\Scheduler1\bin\Debug\Common.Logging.pdb
+D:\TestProject\QuartzService\Scheduler1\bin\Debug\Common.Logging.xml
+D:\TestProject\QuartzService\Scheduler1\bin\Debug\Common.Logging.Core.pdb
+D:\TestProject\QuartzService\Scheduler1\bin\Debug\Common.Logging.Core.xml
+D:\TestProject\QuartzService\Scheduler1\bin\Debug\Quartz.pdb
+D:\TestProject\QuartzService\Scheduler1\bin\Debug\Quartz.xml
+D:\TestProject\QuartzService\Scheduler1\obj\Debug\Scheduler1.csprojResolveAssemblyReference.cache
