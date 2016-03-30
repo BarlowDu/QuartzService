@@ -1,4 +1,0 @@
-D:\TestProject\QuartzService\QuartzServer.DB\bin\Debug\QuartzServer.DB.dll
-D:\TestProject\QuartzService\QuartzServer.DB\bin\Debug\QuartzServer.DB.pdb
-D:\TestProject\QuartzService\QuartzServer.DB\obj\Debug\QuartzServer.DB.dll
-D:\TestProject\QuartzService\QuartzServer.DB\obj\Debug\QuartzServer.DB.pdb

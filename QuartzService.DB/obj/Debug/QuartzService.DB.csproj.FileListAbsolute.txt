@@ -1,5 +1,0 @@
-D:\TestProject\QuartzService\QuartzService.DB\bin\Debug\QuartzService.DB.dll
-D:\TestProject\QuartzService\QuartzService.DB\bin\Debug\QuartzService.DB.pdb
-D:\TestProject\QuartzService\QuartzService.DB\obj\Debug\QuartzService.DB.dll
-D:\TestProject\QuartzService\QuartzService.DB\obj\Debug\QuartzService.DB.pdb
-D:\TestProject\QuartzService\QuartzService.DB\obj\Debug\QuartzService.DB.csprojResolveAssemblyReference.cache
