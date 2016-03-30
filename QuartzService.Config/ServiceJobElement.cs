@@ -52,6 +52,18 @@ namespace QuartzService.Config
         }
 
 
+        [ConfigurationProperty("cron")]
+        public string Cron
+        {
+            get
+            {
+                return base["cron"].ToString();
+            }
+            set
+            {
+                base["cron"] = value;
+            }
+        }
 
 
     }

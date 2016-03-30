@@ -41,10 +41,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Invoker.cs" />
+    <Compile Include="JobInvoker.cs" />
     <Compile Include="SchedulerServerElement.cs" />
     <Compile Include="QuartzServiceSection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SectionServer.cs" />
+    <Compile Include="ServerInvoker.cs" />
     <Compile Include="ServiceJobElement.cs" />
     <Compile Include="ServiceJobElementCollection.cs" />
   </ItemGroup>

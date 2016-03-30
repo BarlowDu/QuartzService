@@ -16,12 +16,13 @@ namespace QuartzService
 
         public void Execute(IJobExecutionContext context)
         {
+
             var section = ServiceSection.GetSection("quartzservice");
-            var invoker = section.GetJobInvoker(0);
-            if (invoker != null)
-            {
-                invoker.Method.Invoke(invoker.Instance, null);
-            }
+            var invoker = section.GetJobInvoker(context.JobDetail.Key.Name);
+            if (invoker == null)
+                throw new NullReferenceException("job服务实例获取失败.");
+
+            invoker.Method.Invoke(invoker.Instance, null);
         }
     }
 }

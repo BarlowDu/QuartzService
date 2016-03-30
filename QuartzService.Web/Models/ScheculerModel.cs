@@ -21,6 +21,8 @@ namespace QuartzService.Web.Models
 
         public int Port { get; set; }
 
+        public bool IsEnable { get; set; }
+
         public SchedulerStatus Status { get; set; }
         public string ProcessName
         {

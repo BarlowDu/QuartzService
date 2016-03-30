@@ -25,9 +25,9 @@ namespace QuartzService.Config
             }
         }
 
-        public Invoker GetServerInvoker()
+        public ServerInvoker GetServerInvoker()
         {
-            Invoker result = new Invoker();
+            ServerInvoker result = new ServerInvoker();
             Type type = Type.GetType(Server.Type);
             if (type == null)
             {
@@ -39,10 +39,10 @@ namespace QuartzService.Config
 
         }
 
-        public Invoker GetJobInvoker(int index)
+        public JobInvoker GetJobInvoker(int index)
         {
             var job = Jobs[index];
-            Invoker result = new Invoker();
+            JobInvoker result = new JobInvoker();
             Type type = Type.GetType(job.Type);
             if (type == null)
             {
@@ -55,10 +55,10 @@ namespace QuartzService.Config
 
         }
 
-        public Invoker GetJobInvoker(string name)
+        public JobInvoker GetJobInvoker(string name)
         {
             var job = Jobs[name];
-            Invoker result = new Invoker();
+            JobInvoker result = new JobInvoker();
             Type type = Type.GetType(job.Type);
             if (type == null)
             {

@@ -19,10 +19,12 @@ namespace CronService
 
             var section = ServiceSection.GetSection("quartzservice");
             var invoker = section.GetServerInvoker();
-            if (invoker != null)
+            if (invoker == null)
             {
-                invoker.Method.Invoke(invoker.Instance,null);
+
+                throw new NullReferenceException("scheduler服务实例获取失败.");
             }
+            invoker.Method.Invoke(invoker.Instance, null);
 
         }
 

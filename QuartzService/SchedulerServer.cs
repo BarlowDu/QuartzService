@@ -1,5 +1,7 @@
 ﻿using Quartz;
 using Quartz.Impl;
+using Quartz.Impl.Matchers;
+using QuartzService.Config;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,20 +16,45 @@ namespace QuartzService
 
         public virtual void InitScheduler()
         {
+
+            var section = ServiceSection.GetSection("quartzservice");
+            var jobConfigs = section.Jobs;
             ISchedulerFactory factory = new StdSchedulerFactory();
             Scheduler = factory.GetScheduler();
-            var job = JobBuilder.Create<DefaultJob>()
-                .WithIdentity("localJob", "default")
-                .RequestRecovery(true).Build();
-            var trigger = TriggerBuilder.Create()
-                .WithIdentity("localTrigger", "default")
-                .StartAt(DateTimeOffset.Now)
-                .WithCronSchedule("*/5 * * * * ?")
-                .Build();
-
-            if (!Scheduler.CheckExists(job.Key))
+            foreach (var j in jobConfigs)
             {
-                Scheduler.ScheduleJob(job, trigger);
+                var jConfig = (j as ServiceJobElement);
+                string jobName = jConfig.Name;
+                string triggerName = jobName + "_trigger";
+                string cron = jConfig.Cron;
+                var job = JobBuilder.Create<DefaultJob>()
+                    .WithIdentity(jobName, "jobgroup")
+                    .RequestRecovery(true).Build();
+                ITrigger trigger;
+
+                if (string.IsNullOrEmpty(cron))
+                {
+
+                    trigger = TriggerBuilder.Create()
+                    .WithIdentity("triggergroup", triggerName)
+                    .StartAt(DateTimeOffset.Now)
+                    .Build();
+                }
+                else
+                {
+                    trigger = TriggerBuilder.Create()
+                    .WithIdentity("localTrigger", triggerName)
+                    .StartAt(DateTimeOffset.Now)
+                    .WithCronSchedule(cron)
+                    .Build();
+
+                }
+
+                if (!Scheduler.CheckExists(job.Key))
+                {
+                    Scheduler.ScheduleJob(job, trigger);
+                }
+                Scheduler.ListenerManager.AddJobListener(new DefaultJobListener(), KeyMatcher<JobKey>.KeyEquals(job.Key));
             }
         }
 

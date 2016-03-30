@@ -305,7 +305,8 @@ namespace QuartzService.Web
                     SchedulerName = dr["SchedulerName"].ToString(),
                     Directory = dr["Directory"].ToString(),
                     FileName = dr["FileName"].ToString(),
-                    Port = Convert.ToInt32(dr["Port"])
+                    Port = Convert.ToInt32(dr["Port"]),
+                    IsEnable = Convert.ToBoolean(dr["IsEnable"])
                 };
                 result.Add(item);
             }
