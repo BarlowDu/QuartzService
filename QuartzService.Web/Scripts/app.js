@@ -3,8 +3,20 @@
     $("#btnRefresh").click(getAllScheduler);
     $("#btnRevise").click(revise);
     $("#btnReload").click(reloadScheduler);
+    $("#btnShow").click(showData);
 
     $("#btnUpload").click(uploadZip);
+    $("#btnAddOK").click(saveScheduler);
+
+    $("#btnAdd").click(function () {
+        $("#hidSchedulerId").val(0);
+        $("#schTitle").text("添加任务");
+        $("#modalScheduler").modal({
+            show: true,
+            keyboard: false
+
+        });
+    });
 
 
     $("#divTb").on("click", "button[cmdStart]", startScheduler);
@@ -22,6 +34,8 @@
 
 
     $("#divTb").on("click", "button[cmdResumeJob]", resumeJob);
+
+    $("#divTb").on("click", "button[cmdEdit]", loadScheduler);
 
 
 });
@@ -210,5 +224,76 @@ function showInfo(title, msg) {
     $("#modalInfo").modal({
         show: true,
         keyboard: false
+    })
+}
+
+
+function saveScheduler() {
+    $("#form2").ajaxSubmit({
+        url: "Home/SaveScheduler",
+        type: "post",
+        success: function (data) {
+            if (data.result) {
+                $("#modalScheduler").modal("hide");
+                showInfo("提示", "保存成功");
+                reloadScheduler();
+                $("#form2")[0].reset();
+            } else {
+
+                showWarn("提示", "保存失败");
+            }
+        }
+    });
+}
+
+function loadScheduler() {
+    var self = $(this);
+    var schId = self.parents("tr").attr("schid");
+    $("#schTitle").text("编辑任务");
+    $.ajax({
+        url: "Home/GetScheduler",
+        data: { schId: schId },
+        type: "get",
+        dataType: "json",
+        success: function (data) {
+            if (data == null) { return; }
+            $("#hidSchedulerId").val(data.SchedulerId);
+            $("#txtSchedulerName").val(data.SchedulerName);
+            $("#txtDirectory").val(data.Directory);
+            $("#txtFileName").val(data.FileName);
+            $("#txtPort").val(data.Port);
+            $("#modalScheduler").modal({
+                show: true,
+                keyboard: false
+
+            });
+        }
+    });
+}
+
+function showData() {
+    $.ajax({
+        url: "Home/GetAllSchedulerData",
+        type: 'get',
+        dataType: "json",
+        success: function (data) {
+            var ls = $("#lsData");
+            ls.empty();
+            $.each(data, function (index, item) {
+                var tr = $("<tr />");
+                var td1 = $("<td />").text(item.SchedulerId);
+                var td2 = $("<td />").text(item.SchedulerName);
+                var td3 = $("<td />").text(item.Directory);
+                var td4 = $("<td />").text(item.FileName);
+                var td5 = $("<td />").text(item.Port);
+                tr.append(td1).append(td2).append(td3).append(td4).append(td5);
+                ls.append(tr);
+            });
+            $("#modalData").modal({
+                show: true,
+                keyboard: false
+
+            });
+        }
     })
 }
