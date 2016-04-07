@@ -34,7 +34,7 @@ namespace QuartzService.Web.Models
                 }
                 else
                 {
-                    return FileName.Substring(0, FileName.IndexOf('.'));
+                    return FileName.Substring(0, FileName.LastIndexOf('.'));
                 }
             }
         }

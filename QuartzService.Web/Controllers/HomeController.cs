@@ -1,6 +1,8 @@
 ﻿using Ionic.Zip;
 using Quartz;
 using Quartz.Impl;
+using QuartzService.DB;
+using QuartzService.DB.Model;
 using QuartzService.Web.Models;
 using System;
 using System.Collections.Generic;
@@ -109,5 +111,41 @@ namespace QuartzService.Web.Controllers
             SchedulerManager.Instance.ResumeJob(schId, groupName, jobName);
             return Json(new CallbackModel(true));
         }
+
+
+
+        public ActionResult GetScheduler(int schId)
+        {
+            var dal = new SchedulerDAL();
+            var result = dal.GetScheduler(schId);
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult GetAllSchedulerData()
+        {
+            var dal = new SchedulerDAL();
+            var result = dal.GetAllScheduler();
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+
+        [HttpPost]
+        public ActionResult SaveScheduler(QuartzSchedulerModel model)
+        {
+            bool success = true;
+            var dal = new SchedulerDAL();
+            if (model.SchedulerId <= 0)
+            {
+                success = dal.AddScheduler(model);
+            }
+            else
+            {
+                success = dal.UpdateScheduler(model);
+            }
+            CallbackModel result = new CallbackModel(success);
+            return Json(result);
+        }
+
+
     }
 }

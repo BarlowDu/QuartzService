@@ -30,8 +30,14 @@ $.ajaxSetup({
     error: function (data) {
         showWarn("提示", data);
     },
-    beforeSend: function () { $("#modalMask").modal({ show: true, backdrop: 'static' }); },
-    complete: function () { $("#modalMask").modal('hide'); }
+    beforeSend: function () {
+        //$("#modalMask").modal({
+        //    show: true, backdrop: 'static'
+        //});
+    },
+    complete: function () {
+        //$("#modalMask").modal('hide');
+    }
 });
 
 function openUploadModal() {

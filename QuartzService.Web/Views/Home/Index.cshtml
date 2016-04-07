@@ -17,6 +17,12 @@
     <script src="~/bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
     <script src="~/Scripts/app.js"></script>
 
+    <style type="text/css">
+        th,td {
+            word-wrap: break-word;
+            word-break: break-all;
+        }
+    </style>
 
 
 </head>
@@ -47,7 +53,12 @@
                 <button class="btn btn-success" id="btnReload">
                     <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>重新加载任务
                 </button>
-                <button class="btn btn-warning" id="btnRefresh">问?</button>
+                <button class="btn btn-success" id="btnAdd">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>添加任务
+                </button>
+                <button class="btn btn-success" id="btnShow">
+                    <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>查看任务数据
+                </button>
             </div>
             <div class="col-md-12" id="divTb">
             </div>
@@ -78,6 +89,7 @@
         </div>
     </div>
 
+    <!--提示框-->
     <div class="modal fade" id="modalWarn" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -114,9 +126,174 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modalMask" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+
+    <!--data-->
+
+    <div class="modal fade" id="modalData" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document" style="width:1000px">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+                    <h5><span class="glyphicon glyphicon-info-sign"></span><span>任务数据列表</span></h5>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered" style="width:600px;table-layout:fixed;">
+                        <colgroup>
+                            <col style="width:120px" />
+                            <col span="3" style="width:220px" />
+                            <col style="width:120px" />
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>任务名(SchedulerName)</th>
+                                <th>上传目录(SchedulerName)</th>
+                                <th>执行程序名(FileName)</th>
+                                <th>监听端口(Port)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lsData"></tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">确认</button>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <!--add/update-->
+    <div class="modal fade" id="modalScheduler" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+                    <h5><span class="glyphicon glyphicon-info-sign"></span><span id="schTitle"></span></h5>
+                </div>
+                <div class="modal-body">
+                    <form id="form2" action="">
+                        <input type="hidden" id="hidSchedulerId" name="SchedulerId" value="0" />
+                        <div class="form-group has-error">
+                            <label for="SchedulerName">任务名(SchedulerName)</label>
+                            <input type="text" id="txtSchedulerName" name="SchedulerName" class="form-control" />
+
+                        </div>
+                        <div class="form-group">
+                            <label for="Directory">上传目录(SchedulerName)</label>
+                            <input type="text" id="txtDirectory" name="Directory" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label for="FileName">执行程序名(FileName)</label>
+                            <input type="text" id="txtFileName" name="FileName" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label for="Port">监听端口(Port)</label>
+                            <input type="text" id="txtPort" name="Port" class="form-control" />
+                        </div>
+
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" id="btnAddOK">确认</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--mask-->
+    <div class="modal fade" id="modalMask" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    </div>
+    <script type="text/javascript">
+        $(function () {
+
+            $("#btnShow").click(showData);
+            $("#btnAdd").click(function () {
+                $("#hidSchedulerId").val(0);
+                $("#schTitle").text("添加任务");
+                $("#modalScheduler").modal({
+                    show: true,
+                    keyboard: false
+
+                });
+            });
+            $("#btnAddOK").click(addScheduler);
+            $("#divTb").on("click", "button[cmdEdit]", loadScheduler);
+        });
+
+        function addScheduler() {
+            $("#form2").ajaxSubmit({
+                url: "Home/SaveScheduler",
+                type: "post",
+                success: function (data) {
+                    if (data.result) {
+                        $("#modalScheduler").modal("hide");
+                        showInfo("提示", "保存成功");
+                        reloadScheduler();
+                        $("#form2")[0].reset();
+                    } else {
+
+                        showWarn("提示", "保存失败");
+                    }
+                }
+            });
+        }
+
+        function loadScheduler() {
+            var self = $(this);
+            var schId = self.parents("tr").attr("schid");
+            $("#schTitle").text("编辑任务");
+            $.ajax({
+                url: "Home/GetScheduler",
+                data: { schId: schId },
+                type: "get",
+                dataType: "json",
+                success: function (data) {
+                    if (data == null) { return; }
+                    $("#hidSchedulerId").val(data.SchedulerId);
+                    $("#txtSchedulerName").val(data.SchedulerName);
+                    $("#txtDirectory").val(data.Directory);
+                    $("#txtFileName").val(data.FileName);
+                    $("#txtPort").val(data.Port);
+                    $("#modalScheduler").modal({
+                        show: true,
+                        keyboard: false
+
+                    });
+                }
+            });
+        }
+
+        function showData() {
+            $.ajax({
+                url: "Home/GetAllSchedulerData",
+                type: 'get',
+                dataType: "json",
+                success: function (data) {
+                    var ls = $("#lsData");
+                    ls.empty();
+                    $.each(data, function (index, item) {
+                        var tr = $("<tr />");
+                        var td1 = $("<td />").text(item.SchedulerId);
+                        var td2 = $("<td />").text(item.SchedulerName);
+                        var td3 = $("<td />").text(item.Directory);
+                        var td4 = $("<td />").text(item.FileName);
+                        var td5 = $("<td />").text(item.Port);
+                        tr.append(td1).append(td2).append(td3).append(td4).append(td5);
+                        ls.append(tr);
+                    });
+                    $("#modalData").modal({
+                        show: true,
+                        keyboard: false
+
+                    });
+                }
+            })
+        }
+
+    </script>
 
 </body>
 </html>

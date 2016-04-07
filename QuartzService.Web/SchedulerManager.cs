@@ -91,7 +91,7 @@ namespace QuartzService.Web
 
 
         /// <summary>
-        /// 还要不要?????
+        /// ?????
         /// </summary>
         /// <returns></returns>
         public object GetSchedulerData()
@@ -119,9 +119,7 @@ namespace QuartzService.Web
             Revise();
         }
 
-        /// <summary>
-        /// 校验
-        /// </summary>
+
         public void Revise()
         {
             lock (objLock)
@@ -257,9 +255,6 @@ namespace QuartzService.Web
             scheduler.Jobs = null;
         }
 
-        /// <summary>
-        /// 暂停Job
-        /// </summary>
         public void PauseJob(int schId, string groupName, string jobName)
         {
             lock (objLock)
@@ -275,9 +270,6 @@ namespace QuartzService.Web
             }
         }
 
-        /// <summary>
-        /// 重启Job
-        /// </summary>
         public void ResumeJob(int schId, string groupName, string jobName)
         {
             lock (objLock)
@@ -296,17 +288,17 @@ namespace QuartzService.Web
         {
             List<SchedulerModel> result = new List<SchedulerModel>();
             SchedulerDAL dal = new SchedulerDAL();
-            DataTable dt = dal.GetAllScheduler();
-            foreach (DataRow dr in dt.Rows)
+            var schs = dal.GetAllScheduler();
+            foreach (var sch in schs)
             {
                 SchedulerModel item = new SchedulerModel()
                 {
-                    SchedulerId = Convert.ToInt32(dr["SchedulerId"]),
-                    SchedulerName = dr["SchedulerName"].ToString(),
-                    Directory = dr["Directory"].ToString(),
-                    FileName = dr["FileName"].ToString(),
-                    Port = Convert.ToInt32(dr["Port"]),
-                    IsEnable = Convert.ToBoolean(dr["IsEnable"])
+                    SchedulerId = sch.SchedulerId,
+                    SchedulerName = sch.SchedulerName,
+                    Directory = sch.Directory,
+                    FileName = sch.FileName,
+                    Port = sch.Port,
+                    IsEnable = sch.IsEnable
                 };
                 result.Add(item);
             }
