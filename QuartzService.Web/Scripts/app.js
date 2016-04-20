@@ -115,7 +115,7 @@ function openCurrentUpload() {
         var self = $(this);
         var sch = getScheduler(self);
         $("#form1").ajaxSubmit({
-            url: '/Home/UploadApplication',
+            url: '/Api/Scheduler/UploadScheduler',
             success: function (data) {
                 showCallbackDefault(data);
                 if (data.result) {
@@ -142,7 +142,7 @@ function startScheduler() {
     var sch = getScheduler(self);
 
     $.ajax({
-        url: '/Home/StartScheduler',
+        url: '/Api/Scheduler/StartScheduler',
         data: { schId: sch.schId },
         type: 'post',
         dataType: "json",
@@ -158,7 +158,7 @@ function stopScheduler() {
     var sch = getScheduler(self);
 
     $.ajax({
-        url: '/Home/ShutDown',
+        url: '/Api/Scheduler/ShutDown',
         data: { schId: sch.schId },
         type: 'post',
         dataType: "json",
@@ -174,7 +174,7 @@ function killProcess() {
     var self = $(this);
     var sch = getScheduler(self);
     $.ajax({
-        url: '/Home/KillProcess',
+        url: '/Api/Scheduler/KillProcess',
         data: { schId: sch.schId },
         type: "post",
         dataType: "json",

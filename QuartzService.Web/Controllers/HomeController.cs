@@ -26,35 +26,82 @@ namespace QuartzService.Web.Controllers
             return View();
         }
 
-        [HttpPost]
-        public ActionResult ShutDown(int schId)
-        {
-            try
-            {
-                SchedulerManager.Instance.ShutDownScheduler(schId);
+        #region Obsolete
 
-                return Json(new CallbackModel(true));
-            }
-            catch (Exception ex)
-            {
-                return Json(new CallbackModel(false, ex.Message));
-            }
-        }
+        //[HttpPost]
+        //public ActionResult ShutDown(int schId)
+        //{
+        //    try
+        //    {
+        //        SchedulerManager.Instance.ShutDownScheduler(schId);
+
+        //        return Json(new CallbackModel(true));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Json(new CallbackModel(false, ex.Message));
+        //    }
+        //}
 
 
-        [HttpPost]
-        public ActionResult StartScheduler(int schId)
-        {
-            try
-            {
-                SchedulerManager.Instance.StartScheduler(this.HttpContext.Server.MapPath("~"), schId);
-                return Json(new CallbackModel(true));
-            }
-            catch (Exception ex)
-            {
-                return Json(new CallbackModel(false, ex.Message));
-            }
-        }
+        //[HttpPost]
+        //public ActionResult StartScheduler(int schId)
+        //{
+        //    try
+        //    {
+        //        SchedulerManager.Instance.StartScheduler(this.HttpContext.Server.MapPath("~"), schId);
+        //        return Json(new CallbackModel(true));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Json(new CallbackModel(false, ex.Message));
+        //    }
+        //}
+
+
+
+        //[HttpPost]
+        //public ActionResult UploadApplication(int schId)
+        //{
+        //    try
+        //    {
+        //        var file = Request.Files[0];
+        //        SchedulerModel scheduler = SchedulerManager.Instance.Schedulers.FirstOrDefault(t => t.SchedulerId == schId);
+        //        if (scheduler != null)
+        //        {
+        //            string dir = HttpContext.Server.MapPath("~/" + scheduler.Directory);
+        //            string fileName = string.Format("{0}-{1:yyyyMMddHHmmss}.zip", scheduler.SchedulerName, DateTime.Now);
+        //            string fileFullName = Path.Combine(dir, fileName);
+        //            if (Directory.Exists(dir) == false)
+        //            {
+        //                Directory.CreateDirectory(dir);
+        //            }
+        //            byte[] buffer = new byte[file.InputStream.Length];
+        //            file.InputStream.Read(buffer, 0, buffer.Length);
+
+        //            using (var fs = new FileStream(fileFullName, FileMode.OpenOrCreate, FileAccess.Write))
+        //            {
+        //                fs.Write(buffer, 0, buffer.Length);
+        //            }
+
+        //            using (ZipFile zip1 = ZipFile.Read(fileFullName))
+        //            {
+        //                foreach (ZipEntry e in zip1)
+        //                {
+        //                    e.Extract(dir, ExtractExistingFileAction.OverwriteSilently);
+        //                }
+        //            }
+
+        //        }
+        //        return Json(new CallbackModel(true));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Json(new CallbackModel(false, ex.Message));
+        //    }
+        //}
+
+        #endregion
 
 
         [HttpPost]
@@ -99,48 +146,6 @@ namespace QuartzService.Web.Controllers
                 return Json(new CallbackModel(false, ex.Message));
             }
         }
-
-        [HttpPost]
-        public ActionResult UploadApplication(int schId)
-        {
-            try
-            {
-                var file = Request.Files[0];
-                SchedulerModel scheduler = SchedulerManager.Instance.Schedulers.FirstOrDefault(t => t.SchedulerId == schId);
-                if (scheduler != null)
-                {
-                    string dir = HttpContext.Server.MapPath("~/" + scheduler.Directory);
-                    string fileName = string.Format("{0}-{1:yyyyMMddHHmmss}.zip", scheduler.SchedulerName, DateTime.Now);
-                    string fileFullName = Path.Combine(dir, fileName);
-                    if (Directory.Exists(dir) == false)
-                    {
-                        Directory.CreateDirectory(dir);
-                    }
-                    byte[] buffer = new byte[file.InputStream.Length];
-                    file.InputStream.Read(buffer, 0, buffer.Length);
-
-                    using (var fs = new FileStream(fileFullName, FileMode.OpenOrCreate, FileAccess.Write))
-                    {
-                        fs.Write(buffer, 0, buffer.Length);
-                    }
-
-                    using (ZipFile zip1 = ZipFile.Read(fileFullName))
-                    {
-                        foreach (ZipEntry e in zip1)
-                        {
-                            e.Extract(dir, ExtractExistingFileAction.OverwriteSilently);
-                        }
-                    }
-
-                }
-                return Json(new CallbackModel(true));
-            }
-            catch (Exception ex)
-            {
-                return Json(new CallbackModel(false, ex.Message));
-            }
-        }
-
         [HttpPost]
         public ActionResult PauseJob(int schId, string groupName, string jobName)
         {
@@ -205,7 +210,6 @@ namespace QuartzService.Web.Controllers
             return Json(result);
         }
 
-
         public ActionResult GetAllServer()
         {
             ServerDAL dal = new ServerDAL();
@@ -216,5 +220,6 @@ namespace QuartzService.Web.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
 
         }
+
     }
 }
