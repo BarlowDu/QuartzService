@@ -17,6 +17,10 @@
                 <th>@scheduler.SchedulerName</th>
                 <th><span class="label label-default">@scheduler.Status</span></th>
                 <th colspan="2">
+                    @if (scheduler.Status == SchedulerStatus.None)
+                    {
+                        <button class="btn btn-default" cmdedit>编辑</button>
+                    }
                     @if (scheduler.Status == SchedulerStatus.Stop)
                     {
                         <button class="btn btn-default" cmdstart>运行</button>
@@ -34,6 +38,7 @@
                     {
                         <button class="btn btn-default" cmdupload>更新程序</button>
                     }
+                    <button class="btn btn-default" cmdview>查看所有</button>
                 </th>
             </tr>
             <tr>

@@ -38,9 +38,8 @@ namespace QuartzService.Web
             Revise();
         }
 
-        public void StartScheduler(HttpContextBase context, int schId)
+        public void StartScheduler(string rootPath, int schId)
         {
-
             lock (objLock)
             {
                 SchedulerModel scheduler = schedulers.FirstOrDefault(t => t.SchedulerId == schId);
@@ -49,21 +48,16 @@ namespace QuartzService.Web
                     Process[] ps = Process.GetProcessesByName(scheduler.ProcessName);
                     if (ps != null && ps.Length > 0)
                     {
-                        return;
+                        throw new Exception("已经存在进程" + scheduler.ProcessName);
                     }
                     Process process = new Process();
                     ProcessStartInfo info = new ProcessStartInfo()
                     {
-                        FileName = context.Server.MapPath("~/" + Path.Combine(scheduler.Directory, scheduler.FileName)),
+                        FileName = Path.Combine(rootPath, scheduler.Directory, scheduler.FileName),
                         //WindowStyle = ProcessWindowStyle.Hidden
                     };
                     process.StartInfo = info;
                     process.Start();
-
-                    process.Exited += (sender, e) =>
-                    {
-                        scheduler.Process = null;
-                    };
 
                     BindScheduler(scheduler, process);
                     scheduler.Status = SchedulerStatus.Running;
@@ -79,7 +73,7 @@ namespace QuartzService.Web
                 SchedulerModel scheduler = schedulers.FirstOrDefault(t => t.SchedulerId == schId);
                 if (scheduler != null && scheduler.Scheduler != null && scheduler.Scheduler.IsShutdown == false)
                 {
-                    scheduler.Scheduler.Shutdown();
+                    scheduler.Scheduler.Shutdown(true);
                     scheduler.Scheduler = null;
                     scheduler.Jobs = null;
                     scheduler.Process = null;
@@ -91,7 +85,7 @@ namespace QuartzService.Web
 
 
         /// <summary>
-        /// ?????
+        /// 还要不要?????
         /// </summary>
         /// <returns></returns>
         public object GetSchedulerData()
@@ -119,48 +113,71 @@ namespace QuartzService.Web
             Revise();
         }
 
-
+        /// <summary>
+        /// 校验
+        /// </summary>
         public void Revise()
         {
             lock (objLock)
             {
                 foreach (var scheduler in schedulers)
                 {
-                    if (string.IsNullOrEmpty(scheduler.ProcessName))
+                    ReviseScheduler(scheduler);
+                }
+            }
+        }
+
+        public SchedulerModel ReviseScheduler(int schId)
+        {
+            var scheduler = schedulers.FirstOrDefault(t => t.SchedulerId == schId);
+            if (schId != null)
+            {
+                return ReviseScheduler(scheduler);
+            }
+            else
+            {
+
+                throw new Exception("不存在Scheduler");
+            }
+        }
+
+        private SchedulerModel ReviseScheduler(SchedulerModel scheduler)
+        {
+            if (string.IsNullOrEmpty(scheduler.ProcessName))
+            {
+                ClearScheduler(scheduler);
+            }
+            else
+            {
+                Process[] ps = Process.GetProcessesByName(scheduler.ProcessName);
+                if (ps != null && ps.Length > 0)
+                {
+                    try
                     {
-                        ClearScheduler(scheduler);
-                    }
-                    else
-                    {
-                        Process[] ps = Process.GetProcessesByName(scheduler.ProcessName);
-                        if (ps != null && ps.Length > 0)
+                        if (CheckSchedulerExists(scheduler) == false)
                         {
-                            try
-                            {
-                                if (CheckSchedulerExists(scheduler) == false)
-                                {
-                                    ClearScheduler(scheduler);
-                                    scheduler.Status = SchedulerStatus.ProcessRunning;
-                                }
-                                else
-                                {
-                                    BindScheduler(scheduler, ps[0]);
-                                    scheduler.Status = SchedulerStatus.Running;
-                                }
-                            }
-                            catch (RemotingException ex)
-                            {
-                                string ms = ex.Message;
-                            }
+                            ClearScheduler(scheduler);
+                            scheduler.Status = SchedulerStatus.ProcessRunning;
                         }
                         else
                         {
-                            ClearScheduler(scheduler);
-                            scheduler.Status = SchedulerStatus.Stop;
+                            BindScheduler(scheduler, ps[0]);
+                            scheduler.Status = SchedulerStatus.Running;
                         }
                     }
+                    catch (RemotingException ex)
+                    {
+                        throw ex;///TODO?????
+                    }
+                }
+                else
+                {
+                    ClearScheduler(scheduler);
+                    scheduler.Status = SchedulerStatus.Stop;
                 }
             }
+            return scheduler;
+
         }
 
         private bool CheckSchedulerExists(SchedulerModel scheduler)
@@ -255,6 +272,9 @@ namespace QuartzService.Web
             scheduler.Jobs = null;
         }
 
+        /// <summary>
+        /// 暂停Job
+        /// </summary>
         public void PauseJob(int schId, string groupName, string jobName)
         {
             lock (objLock)
@@ -270,6 +290,9 @@ namespace QuartzService.Web
             }
         }
 
+        /// <summary>
+        /// 重启Job
+        /// </summary>
         public void ResumeJob(int schId, string groupName, string jobName)
         {
             lock (objLock)
@@ -286,6 +309,7 @@ namespace QuartzService.Web
 
         private List<SchedulerModel> GetSchedulersFromDB()
         {
+
             List<SchedulerModel> result = new List<SchedulerModel>();
             SchedulerDAL dal = new SchedulerDAL();
             var schs = dal.GetAllScheduler();

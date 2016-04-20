@@ -56,6 +56,7 @@ namespace QuartzService
                 }
                 Scheduler.ListenerManager.AddJobListener(new DefaultJobListener(), KeyMatcher<JobKey>.KeyEquals(job.Key));
             }
+            Scheduler.ListenerManager.AddSchedulerListener(new DefaultSchedulerListener(this));
         }
 
         public virtual void Start()
@@ -65,7 +66,9 @@ namespace QuartzService
         }
 
         public virtual void Shutdown()
-        { }
+        {
+            Console.WriteLine("Shutdowned");
+        }
 
 
     }

@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="DefaultJob.cs" />
     <Compile Include="DefaultJobListener.cs" />
+    <Compile Include="DefaultSchedulerListener.cs" />
     <Compile Include="SchedulerServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

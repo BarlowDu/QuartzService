@@ -12,15 +12,11 @@ namespace QuartzService.DB
 {
     public class SchedulerDAL
     {
-        private static string connectionstring;
-        static SchedulerDAL()
-        {
-            connectionstring = System.Configuration.ConfigurationManager.ConnectionStrings["default"].ConnectionString;
-        }
+        
         public IEnumerable<QuartzSchedulerModel> GetAllScheduler()
         {
             string sql = "select * from Quartz_Scheduler where IsEnable=1";
-            SqlConnection conn = new SqlConnection(connectionstring);
+            SqlConnection conn = new SqlConnection(DBConnection.ConnectionString);
             SqlDataAdapter da = new SqlDataAdapter();
             da.SelectCommand = new SqlCommand(sql, conn);
             DataTable dt = new DataTable();
@@ -40,7 +36,7 @@ VALUES  (  @SchedulerName ,@Directory ,@FileName ,@Port )";
             new SqlParameter("@Port",model.Port),
             new SqlParameter("@IsEnable",model.IsEnable)
             };
-            using (SqlConnection conn = new SqlConnection(connectionstring))
+            using (SqlConnection conn = new SqlConnection(DBConnection.ConnectionString))
             {
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 foreach (var p in ps)
@@ -66,7 +62,7 @@ VALUES  (  @SchedulerName ,@Directory ,@FileName ,@Port )";
             new SqlParameter("@FileName",model.FileName),
             new SqlParameter("@Port",model.Port)
             };
-            using (SqlConnection conn = new SqlConnection(connectionstring))
+            using (SqlConnection conn = new SqlConnection(DBConnection.ConnectionString))
             {
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 foreach (var p in ps)
@@ -84,7 +80,7 @@ VALUES  (  @SchedulerName ,@Directory ,@FileName ,@Port )";
         {
             string sql = @"SELECT * FROM Quartz_Scheduler WHERE SchedulerId=@SchedulerId";
 
-            SqlConnection conn = new SqlConnection(connectionstring);
+            SqlConnection conn = new SqlConnection(DBConnection.ConnectionString);
             SqlDataAdapter da = new SqlDataAdapter();
             da.SelectCommand = new SqlCommand(sql, conn);
             da.SelectCommand.Parameters.Add(new SqlParameter("@SchedulerId", schId));

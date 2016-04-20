@@ -18,7 +18,7 @@
     <script src="~/Scripts/app.js"></script>
 
     <style type="text/css">
-        th,td {
+        th, td {
             word-wrap: break-word;
             word-break: break-all;
         }
@@ -26,13 +26,30 @@
 
 
 </head>
-<body style="padding-top: 70px; ">
+<body style="padding-top: 30px; ">
 
-    <nav class="navbar navbar-default  navbar-fixed-top">
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container">
-            <span class="navbar-brand" href="#">Quartz.Net 任务管理</span>
-        </div>
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">Quartz.Net 任务管理</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
 
+                    <li><a href="javascript:;">服务器</a></li>
+                    <li class="dropdown">
+                        <a id="lblHost" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+                        <ul class="dropdown-menu" id="lsHosts"></ul>
+                    </li>
+                </ul>
+            </div><!--/.nav-collapse -->
+        </div>
     </nav>
     <div class="container theme-showcase" role="main">
 
@@ -65,10 +82,9 @@
 
         </div>
     </div>
-
     <!-- Modal -->
     <!--文件上传-->
-    <div class="modal fade" id="modalUpload" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal fade" style="z-index:10000" id="modalUpload" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -90,7 +106,7 @@
     </div>
 
     <!--提示框-->
-    <div class="modal fade" id="modalWarn" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal fade" id="modalWarn" style="z-index:100000" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -175,7 +191,7 @@
                 <div class="modal-body">
                     <form id="form2" action="">
                         <input type="hidden" id="hidSchedulerId" name="SchedulerId" value="0" />
-                        <div class="form-group has-error">
+                        <div class="form-group">
                             <label for="SchedulerName">任务名(SchedulerName)</label>
                             <input type="text" id="txtSchedulerName" name="SchedulerName" class="form-control" />
 
@@ -199,6 +215,53 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" id="btnAddOK">确认</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--all-->
+    <div class="modal fade" id="modalAll" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document" style="width:800px">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+                    <div style="height:50px;margin-top:30px;">
+                        <div style="width:300px;float:left;word-break:break-all;">
+                            <b>Bitauto.Tuan.ActivityCache.Scheduler</b>
+                        </div>
+
+                        <div style="width:300px;float:left;" id="divAll">
+                            <button class="btn btn-default" id="btnStartAll">运行</button>
+                            <button class="btn btn-default" id="btnStopAll">停止</button>
+                            <button class="btn btn-default" id="btnKillAll">强关</button>
+                            <button class="btn btn-default" id="btnUploadAll">更新</button>
+                            <button class="btn btn-default" id="btnReviseAll">校验</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div style="height:400px;overflow:scroll">
+
+                        <table class="table table-bordered" style="margin-top:20px;">
+                            <colgroup span="4" style="width:25%"></colgroup>
+                            <thead>
+                                <tr>
+                                    <th>服务器</th>
+                                    <th>状态</th>
+                                    <th>显示</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbAll"></tbody>
+                        </table>
+
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
                 </div>
             </div>
         </div>

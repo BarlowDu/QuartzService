@@ -1,4 +1,5 @@
-﻿using Quartz;
+﻿using Newtonsoft.Json;
+using Quartz;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -24,6 +25,11 @@ namespace QuartzService.Web.Models
         public bool IsEnable { get; set; }
 
         public SchedulerStatus Status { get; set; }
+
+
+
+        [ScriptIgnore]
+        [JsonIgnore]
         public string ProcessName
         {
             get
@@ -40,9 +46,11 @@ namespace QuartzService.Web.Models
         }
 
         [ScriptIgnore]
+        [JsonIgnore]
         public Process Process { get; set; }
 
         [ScriptIgnore]
+        [JsonIgnore]
         public IScheduler Scheduler { get; set; }
 
         public List<JobModel> Jobs { get; set; }
