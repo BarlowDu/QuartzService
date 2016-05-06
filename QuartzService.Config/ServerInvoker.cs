@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace QuartzService.Config
 {
-    public class ServerInvoker:Invoker
+    public class ServerInvoker : Invoker
     {
     }
 }

@@ -7,13 +7,14 @@ using System.Threading.Tasks;
 
 namespace QuartzService.Config
 {
-    public class SchedulerServerElement:ConfigurationElement
+    public class SchedulerServerElement : ConfigurationElement
     {
         [ConfigurationProperty("type", IsRequired = true)]
-            public string Type {
-                get { return base["type"].ToString(); }
-                set { base["type"] = value; }
-        
+        public string Type
+        {
+            get { return base["type"].ToString(); }
+            set { base["type"] = value; }
+
         }
 
         [ConfigurationProperty("method", IsRequired = true)]

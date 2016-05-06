@@ -53,6 +53,10 @@
       <Project>{6afc5c19-95e8-4dae-a9f3-eaff090e1dc0}</Project>
       <Name>QuartzService.Config</Name>
     </ProjectReference>
+    <ProjectReference Include="..\QuartzService.Log\QuartzService.Log.csproj">
+      <Project>{c61dbe29-d94f-45cd-972f-b0640b712a2e}</Project>
+      <Name>QuartzService.Log</Name>
+    </ProjectReference>
     <ProjectReference Include="..\QuartzService\QuartzService.csproj">
       <Project>{5533ef98-8fca-4d69-a8f6-ea784ad5ae21}</Project>
       <Name>QuartzService</Name>

@@ -1,5 +1,6 @@
 ﻿using Quartz;
 using QuartzService.Config;
+using QuartzService.Container;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -18,7 +19,8 @@ namespace QuartzService
         {
 
             var section = ServiceSection.GetSection("quartzservice");
-            var invoker = section.GetJobInvoker(context.JobDetail.Key.Name);
+            var name = context.JobDetail.Key.Name;
+            var invoker = section.GetJobInvoker(name, JobObjectContainer.Get(name));
             if (invoker == null)
                 throw new NullReferenceException("job服务实例获取失败.");
 

@@ -39,33 +39,41 @@ namespace QuartzService.Config
 
         }
 
-        public JobInvoker GetJobInvoker(int index)
+        public JobInvoker GetJobInvoker(int index, object jobObject)
         {
             var job = Jobs[index];
             JobInvoker result = new JobInvoker();
-            Type type = Type.GetType(job.Type);
-            if (type == null)
+            //Type type = Type.GetType(job.Type);
+            //if (type == null)
+            //{
+            //    return null;
+            //}
+            if (jobObject == null)
             {
                 return null;
             }
-            result.Instance = Activator.CreateInstance(type);
-            result.Method = type.GetMethod(job.Method);
+            result.Instance = jobObject;
+            result.Method = jobObject.GetType().GetMethod(job.Method);
             return result;
 
 
         }
 
-        public JobInvoker GetJobInvoker(string name)
+        public JobInvoker GetJobInvoker(string name, object jobObject)
         {
             var job = Jobs[name];
             JobInvoker result = new JobInvoker();
-            Type type = Type.GetType(job.Type);
-            if (type == null)
+            //Type type = Type.GetType(job.Type);
+            //if (type == null)
+            //{
+            //    return null;
+            //}
+            if (jobObject == null)
             {
                 return null;
             }
-            result.Instance = Activator.CreateInstance(type);
-            result.Method = type.GetMethod(job.Method);
+            result.Instance = jobObject;
+            result.Method = jobObject.GetType().GetMethod(job.Method);
             return result;
 
 

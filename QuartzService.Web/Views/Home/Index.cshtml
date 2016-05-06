@@ -32,23 +32,8 @@
     <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="#">Quartz.Net 任务管理</a>
+                <a class="navbar-brand" href="javascript:;">Quartz.Net 任务管理</a>
             </div>
-            <div id="navbar" class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-
-                    <li><a href="javascript:;">服务器</a></li>
-                    <li class="dropdown">
-                        <a id="lblHost" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-                        <ul class="dropdown-menu" id="lsHosts"></ul>
-                    </li>
-                </ul>
-            </div><!--/.nav-collapse -->
         </div>
     </nav>
     <div class="container theme-showcase" role="main">
@@ -63,21 +48,39 @@
                 <button class="btn btn-default" id="btnRefresh">
                     <span class="glyphicon  glyphicon-repeat" aria-hidden="true"></span>刷新
                 </button>
-
-                <button class="btn btn-info" id="btnRevise">
-                    <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>校验任务
-                </button>
-                <button class="btn btn-success" id="btnReload">
-                    <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>重新加载任务
-                </button>
-                <button class="btn btn-success" id="btnAdd">
+                <button class="btn btn-info" id="btnAdd">
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>添加任务
                 </button>
                 <button class="btn btn-success" id="btnShow">
-                    <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>查看任务数据
+                    <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>查看任务数据
                 </button>
             </div>
             <div class="col-md-12" id="divTb">
+                <table class="table table-bordered" style="margin-top:20px;">
+                    <colgroup>
+                        <col style="width:40%" />
+                        <col style="width:30%" />
+                        <col style="width:30%" />
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>Scheduler</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tb">
+                        <tr>
+                            <td>Bitauto.Tuan.ActivitySignupCache.Scheduler</td>
+                            <td>
+                                <div><span class="label label-default">Stop</span><span class="label label-info">1</span></div>
+                                <div><span class="label label-default">Running</span><span class="label label-info">2</span></div>
+                                <div><span class="label label-default">None</span><span class="label label-info">1</span></div>
+                            </td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
         </div>
@@ -164,7 +167,7 @@
                             <tr>
                                 <th>Id</th>
                                 <th>任务名(SchedulerName)</th>
-                                <th>上传目录(SchedulerName)</th>
+                                <th>上传目录(Directory)</th>
                                 <th>执行程序名(FileName)</th>
                                 <th>监听端口(Port)</th>
                             </tr>
@@ -213,7 +216,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" id="btnAddOK">确认</button>
+                    <button type="button" class="btn btn-default" id="btnSaveOK">确认</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
                 </div>
             </div>
@@ -225,17 +228,17 @@
         <div class="modal-dialog" role="document" style="width:800px">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
 
                     <div style="height:50px;margin-top:30px;">
                         <div style="width:300px;float:left;word-break:break-all;">
-                            <b>Bitauto.Tuan.ActivityCache.Scheduler</b>
+                            <b id="lblCurrentSchName"></b>
                         </div>
 
                         <div style="width:300px;float:left;" id="divAll">
                             <button class="btn btn-default" id="btnStartAll">运行</button>
                             <button class="btn btn-default" id="btnStopAll">停止</button>
-                            <button class="btn btn-default" id="btnKillAll">强关</button>
+                            @*<button class="btn btn-default" id="btnKillAll">强关</button>*@
                             <button class="btn btn-default" id="btnUploadAll">更新</button>
                             <button class="btn btn-default" id="btnReviseAll">校验</button>
                         </div>
@@ -261,7 +264,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal" id="btnSchedulerClose">关闭</button>
                 </div>
             </div>
         </div>

@@ -1,4 +1,5 @@
 ﻿using Quartz;
+using QuartzService.Log;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace QuartzService
 {
-    public class DefaultJobListener:IJobListener
+    public class DefaultJobListener : IJobListener
     {
         public void JobExecutionVetoed(IJobExecutionContext context)
         {
@@ -21,11 +22,13 @@ namespace QuartzService
         {
             if (jobException == null)
             {
-                Console.WriteLine("{0:yyyy-MM-dd HH:mm:ss}\t{1}:{2}\tRunned", DateTime.Now, context.JobDetail.Key.Group, context.JobDetail.Key.Name);
+                //Console.WriteLine("{0:yyyy-MM-dd HH:mm:ss}\t{1}:{2}\tRunned", DateTime.Now, context.JobDetail.Key.Group, context.JobDetail.Key.Name);
             }
-            else {
+            else
+            {
 
-                Console.WriteLine("{0:yyyy-MM-dd HH:mm:ss}\t{1}:{2}\tthrow Exception:{3}", DateTime.Now, context.JobDetail.Key.Group, context.JobDetail.Key.Name,jobException);
+                LogHandler.Info("Job运行异常", jobException);
+                //Console.WriteLine("{0:yyyy-MM-dd HH:mm:ss}\t{1}:{2}\tthrow Exception:{3}", DateTime.Now, context.JobDetail.Key.Group, context.JobDetail.Key.Name,jobException);
             }
         }
 

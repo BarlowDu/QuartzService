@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace QuartzService.Config
 {
-    public class JobInvoker:Invoker
+    public class JobInvoker : Invoker
     {
         public string Cron { get; set; }
 

@@ -1,7 +1,9 @@
 ﻿using QuartzService.Config;
+using QuartzService.Log;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -15,6 +17,9 @@ namespace CronService
     {
         static void Main(string[] args)
         {
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            Console.Title = Process.GetCurrentProcess().ProcessName;
+
             LoadAssemblies();
 
             var section = ServiceSection.GetSection("quartzservice");
@@ -25,6 +30,13 @@ namespace CronService
                 throw new NullReferenceException("scheduler服务实例获取失败.");
             }
             invoker.Method.Invoke(invoker.Instance, null);
+
+        }
+
+        static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Exception ex = (Exception)e.ExceptionObject;
+            LogHandler.Error("全局异常", ex);
 
         }
 
@@ -45,4 +57,8 @@ namespace CronService
             }
         }
     }
+
+
+
+
 }

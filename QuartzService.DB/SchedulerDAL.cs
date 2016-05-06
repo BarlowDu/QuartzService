@@ -12,7 +12,7 @@ namespace QuartzService.DB
 {
     public class SchedulerDAL
     {
-        
+
         public IEnumerable<QuartzSchedulerModel> GetAllScheduler()
         {
             string sql = "select * from Quartz_Scheduler where IsEnable=1";
@@ -27,7 +27,7 @@ namespace QuartzService.DB
         public bool AddScheduler(QuartzSchedulerModel model)
         {
             int count = 0;
-            string sql = @"INSERT INTO dbo.Quartz_Scheduler( SchedulerName ,Directory ,FileName ,Port)
+            string sql = @"INSERT INTO Quartz_Scheduler( SchedulerName ,Directory ,FileName ,Port)
 VALUES  (  @SchedulerName ,@Directory ,@FileName ,@Port )";
             SqlParameter[] ps = new SqlParameter[] { 
             new SqlParameter("@SchedulerName",model.SchedulerName),
@@ -53,7 +53,7 @@ VALUES  (  @SchedulerName ,@Directory ,@FileName ,@Port )";
         public bool UpdateScheduler(QuartzSchedulerModel model)
         {
             int count = 0;
-            string sql = @"UPDATE dbo.Quartz_Scheduler SET SchedulerName=@SchedulerName ,Directory=@Directory ,FileName=@FileName ,Port=@Port 
+            string sql = @"UPDATE Quartz_Scheduler SET SchedulerName=@SchedulerName ,Directory=@Directory ,FileName=@FileName ,Port=@Port 
                         WHERE SchedulerId=@SchedulerId";
             SqlParameter[] ps = new SqlParameter[] { 
             new SqlParameter("@SchedulerId",model.SchedulerId),
@@ -91,6 +91,24 @@ VALUES  (  @SchedulerName ,@Directory ,@FileName ,@Port )";
                 return null;
             }
             return OrmTransfer.GetModel<QuartzSchedulerModel>(dt.Rows[0]);
+        }
+
+        public bool CheckSchedulerNameExists(string schName, int schId)
+        {
+            string sql = "select count(1) FROM Quartz_Scheduler WHERE SchedulerName=@SchedulerName AND SchedulerId!=@SchedulerId";
+            SqlConnection conn = new SqlConnection(DBConnection.ConnectionString);
+            SqlDataAdapter da = new SqlDataAdapter();
+            da.SelectCommand = new SqlCommand(sql, conn);
+            da.SelectCommand.Parameters.Add(new SqlParameter("@SchedulerId", schId));
+            da.SelectCommand.Parameters.Add(new SqlParameter("@SchedulerName", schName));
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+            if (dt == null || dt.Rows.Count <= 0)
+            {
+                return true;
+            }
+            var count = Convert.ToInt32(dt.Rows[0][0]);
+            return count > 0;
         }
     }
 }

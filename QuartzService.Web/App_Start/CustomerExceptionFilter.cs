@@ -11,6 +11,8 @@ namespace QuartzService.Web.App_Start
     {
         public void OnException(ExceptionContext filterContext)
         {
+
+            QuartzService.Web.Log.LogHandler.Error("", filterContext.Exception);
             filterContext.Result = new JsonResult() { Data = new CallbackModel(false, filterContext.Exception.Message) };
             filterContext.ExceptionHandled = true;
         }

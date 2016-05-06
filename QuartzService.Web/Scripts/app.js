@@ -1,17 +1,13 @@
-﻿var hosts = ["localhost:26694"];
-var currentHost = "localhost:26694";
-var currentScheduler = null;
+﻿var currentScheduler = null;
+var schedulers = {};
+/*
+{"SchedulerName":{"schedulerId":1,"list":{"localhost":{},"localhost1":{}},"summary":{"error":0,"none":0,"running":0,"stop":0,"processRunning":0}}}
+*/
+var schedulersData = [];
 $(function () {
-    initHosts();
     getAllScheduler();
     $("#btnRefresh").click(getAllScheduler);
-    $("#btnRevise").click(revise);
-    $("#btnReload").click(reloadScheduler);
     $("#btnShow").click(showData);
-
-    //$("#btnUpload").click(uploadZip);
-    $("#btnAddOK").click(saveScheduler);
-
     $("#btnAdd").click(function () {
         $("#hidSchedulerId").val(0);
         $("#txtSchedulerName").val("");
@@ -26,27 +22,25 @@ $(function () {
         });
     });
 
+    $("#btnSaveOK").click(saveScheduler);
+    /////////////////
 
-    $("#divTb").on("click", "button[cmdStart]", startScheduler);
-    $("#divTb").on("click", "button[cmdStop]", stopScheduler);
-    $("#divTb").on("click", "button[cmdkill]", killProcess);
-    $("#divTb").on("click", "button[cmdUpload]", openCurrentUpload);
-    $("#divTb").on("click", "button[cmdEdit]", loadScheduler);
-    $("#divTb").on("click", "button[cmdview]", showSchedulerOnHosts);
-
-
-
+    $("#tb").on("click", "button[cmdStart]", startScheduler);
+    $("#tb").on("click", "button[cmdStop]", stopScheduler);
+    $("#tb").on("click", "button[cmdView]", showSchedulerOnHosts);
+    $("#tb").on("click", "button[cmdEdit]", loadScheduler);
+    $("#tb").on("click", "button[cmdRevise]", revise);
 
 
-    $("#divTb").on("click", "button[cmdPauseJob]", pauseJob);
-    $("#divTb").on("click", "button[cmdResumeJob]", resumeJob);
+
 
 
     $("#btnStartAll").click(startAllHostScheduler);
     $("#btnStopAll").click(stopAllHostScheduler);
     $("#btnReviseAll").click(reviseAllHostScheduler);
-    $("#btnKillAll").click(killAllHostScheduler);
+
     $("#btnUploadAll").click(uploadAllHostScheduler);
+    $("#btnSchedulerClose").click(closeSchedulerOnHosts);
 
     $("#tbAll").on("click", "button[cmdStart]", startHostScheduler);
     $("#tbAll").on("click", "button[cmdStop]", stopHostScheduler);
@@ -59,222 +53,109 @@ $(function () {
 });
 
 $.ajaxSetup({
+    async: false,
     error: function (data) {
         showWarn("提示", data);
     },
     error: function (xhr, textStatus, errorThrown) {
         console.log(JSON.stringify(textStatus));
         console.log(JSON.stringify(errorThrown));
-    },
-    beforeSend: function () {
-        //$("#modalMask").modal({
-        //    show: true, backdrop: 'static'
-        //});
-    },
-    complete: function () {
-        //$("#modalMask").modal('hide');
     }
+
 });
-function initHosts() {
-    $.ajax({
-        url: "/Home/GetAllServer",
-        type: "get",
-        dataType: "json",
-        success: function (data) {
-            hosts = data.Hosts;
-            currentHost = data.CurrentHost;
-            var lbl = $("#lblHost");
-            lbl.attr("href", "http://" + currentHost).html(currentHost + ' <span class="caret"></span>');
-
-            var ls = $("#lsHosts");
-            //ls.empty();
-            $.each(hosts, function (i, host) {
-                var a = $("<a />").text(host).attr("href", "//" + host);
-                ls.append($("<li />").append(a));
-            })
-        }
-    })
-}
 
 
+
+///////////////////////////////////////////////////////////
 
 function getAllScheduler() {
-    $("#divTb").load('/Home/AllScheduler')
-}
-//////////////////////////////////////////////////////////////////////////////
-
-function openCurrentUpload() {
-
-    var self = $(this);
-    var btn = $("#btnUpload");
-    var sch = getScheduler(self);
-    $("#modelTitle").text(sch.schName);
-    $("#hidSchId").val(sch.schId);
-    $("#form1")[0].reset();
-    var save = function () {
-        var self = $(this);
-        var sch = getScheduler(self);
-        $("#form1").ajaxSubmit({
-            url: '/Api/Scheduler/UploadScheduler',
-            success: function (data) {
-                showCallbackDefault(data);
-                if (data.result) {
-                    $("#modalUpload").modal("hide");
-                }
-            }
-        });
-
-    };
-    btn.unbind().click(save);
-    $("#modalUpload").modal({
-        show: true,
-        keyboard: false
-
-    });
-}
-
-
-
-
-
-function startScheduler() {
-    var self = $(this);
-    var sch = getScheduler(self);
-
+    $("#tb").empty();
     $.ajax({
-        url: '/Api/Scheduler/StartScheduler',
-        data: { schId: sch.schId },
-        type: 'post',
+        url: "/api/AllServer/ReviseAll",
+        type: 'get',
         dataType: "json",
         success: function (data) {
-            showCallbackDefault(data);
+            schedulers = data;
+            showAllScheduler();
         }
-    });
-
+    })
 }
 
-function stopScheduler() {
-    var self = $(this);
-    var sch = getScheduler(self);
-
+function getAllHostScheduler(path) {
+    var hostCount = 0;
     $.ajax({
-        url: '/Api/Scheduler/ShutDown',
-        data: { schId: sch.schId },
-        type: 'post',
+        url: path,
+        type: "get",
         dataType: "json",
+        error: function () {
+        },
         success: function (data) {
-            showCallbackDefault(data);
+            schedulers = data;
+            showAllScheduler();
         }
-    });
-
-
-}
-
-function killProcess() {
-    var self = $(this);
-    var sch = getScheduler(self);
-    $.ajax({
-        url: '/Api/Scheduler/KillProcess',
-        data: { schId: sch.schId },
-        type: "post",
-        dataType: "json",
-        success: function (data) {
-            showCallbackDefault(data);
-        }
-    });
-}
-function revise() {
-    $.ajax({
-        url: '/Home/Revise',
-        type: "post",
-        dataType: "json",
-        success: function (data) {
-            showCallbackDefault(data);
-        }
-    });
-}
-
-function getScheduler(ele) {
-
-    var self = $(ele);
-    var p = self.parents("tr");
-    return { schId: p.attr("schId"), schName: p.attr("schName") }
-}
-
-
-
-function reloadScheduler() {
-    $.ajax({
-        url: '/Home/ReloadScheduler',
-        type: "post",
-        dataType: "json",
-        success: function (data) {
-            showCallbackDefault(data);
-        }
-    });
-}
-/////////////////////////////////////////////////////
-function pauseJob() {
-    $.ajax({
-        url: '/Home/PauseJob',
-        data: getJob($(this)),
-        type: "post",
-        dataType: "json",
-        success: function (data) {
-            showCallbackDefault(data);
-        }
-    });
+    })
 
 }
 
-function resumeJob() {
-    $.ajax({
-        url: '/Home/ResumeJob',
-        data: getJob($(this)),
-        type: "post",
-        dataType: "json",
-        success: function (data) {
-            showCallbackDefault(data);
-        }
-    });
-
-}
-function getJob(ele) {
-    var self = $(ele);
-    return { schId: self.attr("schId"), groupName: self.attr("groupname"), jobName: self.attr("jobname") };
-}
-
-
-//////////////////////////////////////////////////////////////////////////
-
-function showCallbackDefault(callback) {
-    if (callback.result) {
-        getAllScheduler();
-    } else {
-        showWarn("提示", callback.msg);
+function showAllScheduler() {
+    var tb = $("#tb");
+    for (var key in schedulers) {
+        var scheduler = schedulers[key];
+        var tr = getSchedulerTr(key, scheduler);
+        tb.append(tr);
     }
 }
-function showWarn(title, msg) {
-    $("#spanWarnTitle").text(title);
-    $("#divWarnMsg").text(msg);
-    $("#modalWarn").modal({
-        show: true,
-        keyboard: false
+function getSchedulerTr(schedulerName, scheduler) {
+    var tr = $("<tr />");
+    var td1 = $("<td />").text(schedulerName);
+    var td2 = $("<td />");
+    var td3 = $("<td />");
+    var summary = scheduler.summary;
+
+    td2.append($('<div><span class="label label-default">Error</span><span class="label label-info">' + summary.error + '</span></div>'))
+       .append($('<div><span class="label label-default">None</span><span class="label label-info">' + summary.none + '</span></div>'))
+       .append($('<div><span class="label label-default">Stop</span><span class="label label-info">' + summary.stop + '</span></div>'))
+       .append($('<div><span class="label label-default">Running</span><span class="label label-info">' + summary.running + '</span></div>'))
+       .append($('<div><span class="label label-default">ProcessRunning</span><span class="label label-info">' + summary.processRunning + '</span></div>'));
+
+    td3.append($('<button class="btn btn-default" cmdStart>运行</button>'))
+       .append($('<button class="btn btn-default" cmdStop>停止</button>'))
+       .append($('<button class="btn btn-default" cmdView>查看所有</button>'))
+       .append($('<button class="btn btn-default" cmdRevise>校验</button>'))
+       .append($('<button class="btn btn-default" cmdEdit>编辑</button>'));
+    tr.append(td1).append(td2).append(td3).attr("schId", scheduler.schedulerId).attr("schName", schedulerName);
+    return tr;
+}
+/////////////////////////////////////////
+
+
+function showData() {
+    $.ajax({
+        url: "/Home/GetAllSchedulerData",
+        type: 'get',
+        dataType: "json",
+        success: function (data) {
+            var ls = $("#lsData");
+            ls.empty();
+            $.each(data, function (index, item) {
+                var tr = $("<tr />");
+                var td1 = $("<td />").text(item.SchedulerId);
+                var td2 = $("<td />").text(item.SchedulerName);
+                var td3 = $("<td />").text(item.Directory);
+                var td4 = $("<td />").text(item.FileName);
+                var td5 = $("<td />").text(item.Port);
+                tr.append(td1).append(td2).append(td3).append(td4).append(td5);
+                ls.append(tr);
+            });
+            $("#modalData").modal({
+                show: true,
+                keyboard: false
+
+            });
+        }
     })
 }
 
-
-
-function showInfo(title, msg) {
-    $("#spanInfoTitle").text(title);
-    $("#divInfoMsg").text(msg);
-    $("#modalInfo").modal({
-        show: true,
-        keyboard: false
-    })
-}
-
-///////////////////////////////////////////////////////////////////////
 function saveScheduler() {
     if (validate() == false) {
         return;
@@ -285,12 +166,12 @@ function saveScheduler() {
         success: function (data) {
             if (data.result) {
                 $("#modalScheduler").modal("hide");
-                showInfo("提示", "保存成功");
-                reloadScheduler();
+                showInfo("提示", data.msg);
+                getAllScheduler();
                 $("#form2")[0].reset();
             } else {
 
-                showWarn("提示", "保存失败");
+                showWarn("提示", "保存失败:" + data.msg);
             }
         }
     });
@@ -348,6 +229,108 @@ function validate() {
 }
 
 
+/////////////////////////////////////////
+function showSchedulerOnHosts() {
+
+    var self = $(this);
+    var sch = getScheduler(self);
+
+    currentScheduler = sch;
+    $("#lblCurrentSchName").text(currentScheduler.schName);
+    var tb = $("#tbAll");
+    tb.empty();
+    var _sch = schedulers[sch.schName];
+    for (var key in _sch.list) {
+        var data = _sch.list[key];
+        var tr = getHostTr(key, data);
+        tb.append(tr);
+    }
+    $("#modalAll").modal({
+        backdrop: 'static',
+        show: true,
+        keyboard: false
+
+    })
+    return;
+
+
+}
+
+
+function getStatus(intStatus) {
+    switch (intStatus) {
+        case 1:
+            return "Stop";
+        case 2:
+            return "Running";
+        case 3:
+            return "ProcessRunning";
+        default:
+            return "None"
+    }
+}
+function getHostTr(key, data) {
+
+    var tr = $("<tr />").attr("host", key);
+    if (data != null) {
+        tr.append($("<td />").text(key));
+        tr.append($("<td />").html('<span class="label label-default">' + getStatus(data.Status) + '</span>'));
+        tr.append($("<td  class='alert' />"));
+        tr.append(getButtonsTd(data.Status));
+    }
+    else {
+        tr.append($("<td colspan='4' />").text(key + "加载失败!"));
+    }
+    return tr
+
+}
+function getButtonsTd(intStatus) {
+    var td = $("<td />");
+    if (intStatus == 1) {
+        td.append($('<button class="btn btn-default" cmdStart >运行</button>'));
+        td.append($('<button class="btn btn-default" cmdUpload >更新</button>'));
+    }
+    else if (intStatus == 2) {
+        td.append($('<button class="btn btn-default" cmdStop >停止</button>'));
+
+    }
+    else if (intStatus == 3) {
+        td.append($('<button class="btn btn-default" cmdKill >强制关闭</button>'));
+
+    }
+
+    td.append($('<button class="btn btn-default" cmdRevise >校验</button>'));
+
+    return td;
+}
+function getButtons(intStatus) {
+    var td = $("<td />");
+    if (intStatus == 1) {
+        td.append($('<button class="btn btn-default" cmbStart >运行</button>'));
+        td.append($('<button class="btn btn-default" cmdupload >更新</button>'));
+    }
+    else if (intStatus == 2) {
+        td.append($('<button class="btn btn-default" cmdstop >停止</button>'));
+
+    }
+    else if (intStatus == 3) {
+        td.append($('<button class="btn btn-default" cmdkill >强制关闭</button>'));
+
+    }
+
+    td.append($('<button class="btn btn-default" cmdrevise >校验</button>'));
+
+    return td;
+}
+
+
+function closeSchedulerOnHosts() {
+    var btnRevise = $("#tb tr[schId=" + currentScheduler.schId + "] button[cmdRevise]");
+    if (btnRevise.length > 0) {
+        revise.call(btnRevise);
+    }
+}
+/////////
 
 function loadScheduler() {
     var self = $(this);
@@ -373,219 +356,67 @@ function loadScheduler() {
         }
     });
 }
+function revise() {
+    var self = $(this);
+    var tr = self.parents("tr");
+    var sch = getScheduler(self);
 
-function showData() {
     $.ajax({
-        url: "/Home/GetAllSchedulerData",
-        type: 'get',
+        url: "/api/AllServer/Revise",
+        data: { schId: sch.schId },
+        type: "post",
         dataType: "json",
+        error: function () {
+        },
         success: function (data) {
-            var ls = $("#lsData");
-            ls.empty();
-            $.each(data, function (index, item) {
-                var tr = $("<tr />");
-                var td1 = $("<td />").text(item.SchedulerId);
-                var td2 = $("<td />").text(item.SchedulerName);
-                var td3 = $("<td />").text(item.Directory);
-                var td4 = $("<td />").text(item.FileName);
-                var td5 = $("<td />").text(item.Port);
-                tr.append(td1).append(td2).append(td3).append(td4).append(td5);
-                ls.append(tr);
-            });
-            $("#modalData").modal({
-                show: true,
-                keyboard: false
-
-            });
+            schedulers[sch.schName] = data;
+            var nTr = getSchedulerTr(sch.schName, data);
+            tr.replaceWith(nTr);
         }
-    })
-}
-
-/////////////////////////////////////////////////////////////////////////
-function showSchedulerOnHosts() {
-
-    var self = $(this);
-    var sch = getScheduler(self);
-    var result = {};
-    var callback = function (host, data) {
-        result[host] = data;
-        var count = 0;
-        for (var k in result) {
-            count++;
-        }
-        if (count == hosts.length) {
-            openDialogSchedulerOnHosts(sch, result);
-        }
-    }
-
-    $.each(hosts, function (i, host) {
-        $.ajax({
-            url: "//" + host + "/api/Scheduler/GetScheduler",
-            type: "get",
-            data: { schId: sch.schId },
-            dataType: "Json",
-            success: function (data) {
-                callback(host, data);
-            }
-        })
     });
-
 }
-
-function openDialogSchedulerOnHosts(_scheduler, data) {
-
-    currentScheduler = _scheduler;
-    var tb = $("#tbAll");
-    tb.empty();
-    for (var key in data) {
-        var item = data[key];
-        var tr = $("<tr />").attr("host", key);
-        tr.append($("<td />").text(key));
-        tr.append($("<td />").html('<span class="label label-default">' + getStatus(item.Status) + '</span>'));
-        tr.append($("<td  class='alert alert-info' />"));
-        tr.append(getButtons(item.Status))
-        tb.append(tr);
-    }
-    $("#modalAll").modal({
-        show: true,
-        keyboard: false
-
-    })
-}
-
-function getStatus(intStatus) {
-    switch (intStatus) {
-        case 1:
-            return "Stop";
-        case 2:
-            return "Running";
-        case 3:
-            return "ProcessRunning";
-        default:
-            return "None"
-    }
-}
-
-function getButtons(intStatus) {
-    var td = $("<td />");
-    if (intStatus == 1) {
-        td.append($('<button class="btn btn-default" cmbStart >运行</button>'));
-        td.append($('<button class="btn btn-default" cmdupload >更新</button>'));
-    }
-    else if (intStatus == 2) {
-        td.append($('<button class="btn btn-default" cmdstop >停止</button>'));
-
-    }
-    else if (intStatus == 3) {
-        td.append($('<button class="btn btn-default" cmdkill >强制关闭</button>'));
-
-    }
-
-    td.append($('<button class="btn btn-default" cmdrevise >校验</button>'));
-
-    return td;
-}
-
-
-
-/////////////////////////////////////////////////////////////////////////
-function showSchedulerOnHosts() {
-
+function startScheduler() {
     var self = $(this);
+    var tr = self.parents("tr");
     var sch = getScheduler(self);
-    var result = {};
-    var callback = function (host, data) {
-        result[host] = data;
-        var count = 0;
-        for (var k in result) {
-            count++;
-        }
-        if (count == hosts.length) {
-            openDialogSchedulerOnHosts(sch, result);
-        }
-    }
 
-    $.each(hosts, function (i, host) {
-        $.ajax({
-            url: "//" + host + "/api/Scheduler/GetScheduler",
-            type: "get",
-            data: { schId: sch.schId },
-            dataType: "Json",
-            success: function (data) {
-                callback(host, data);
-            }
-        })
+    $.ajax({
+        url: "/api/AllServer/StartAllHostScheduler",
+        data: { schId: sch.schId, },
+        type: "post",
+        dataType: "json",
+        error: function () {
+        },
+        success: function (data) {
+            revise.call(self);
+        }
     });
-
 }
 
-function openDialogSchedulerOnHosts(_scheduler, data) {
+function stopScheduler() {
+    var self = $(this);
+    var tr = self.parents("tr");
+    var sch = getScheduler(self);
 
-    currentScheduler = _scheduler;
-    var tb = $("#tbAll");
-    tb.empty();
-    for (var key in data) {
-        var tr = getHostTr(key, data[key]);
-        tb.append(tr);
-    }
-    $("#modalAll").modal({
-        show: true,
-        keyboard: false
-
-    })
+    $.ajax({
+        url: "/api/AllServer/StopAllHostScheduler",
+        data: { schId: sch.schId, },
+        type: "post",
+        dataType: "json",
+        error: function () {
+        },
+        success: function (data) {
+            revise.call(self);
+        }
+    });
 }
+function getScheduler(ele) {
 
-function getStatus(intStatus) {
-    switch (intStatus) {
-        case 1:
-            return "Stop";
-        case 2:
-            return "Running";
-        case 3:
-            return "ProcessRunning";
-        default:
-            return "None"
-    }
+    var self = $(ele);
+    var p = self.parents("tr");
+    return { schId: p.attr("schId"), schName: p.attr("schName") }
 }
-function getHostTr(key, data) {
-
-    var tr = $("<tr />").attr("host", key);
-    tr.append($("<td />").text(key));
-    tr.append($("<td />").html('<span class="label label-default">' + getStatus(data.Status) + '</span>'));
-    tr.append($("<td  class='alert' />"));
-    tr.append(getButtonsTd(data.Status));
-    return tr
-
-}
-function getButtonsTd(intStatus) {
-    var td = $("<td />");
-    if (intStatus == 1) {
-        td.append($('<button class="btn btn-default" cmdStart >运行</button>'));
-        td.append($('<button class="btn btn-default" cmdUpload >更新</button>'));
-    }
-    else if (intStatus == 2) {
-        td.append($('<button class="btn btn-default" cmdStop >停止</button>'));
-
-    }
-    else if (intStatus == 3) {
-        td.append($('<button class="btn btn-default" cmdKill >强制关闭</button>'));
-
-    }
-
-    td.append($('<button class="btn btn-default" cmdRevise >校验</button>'));
-
-    return td;
-}
-
-function getUrl(path, host) {
-    if (host == null || host == "") {
-        return url;
-    }
-    else {
-        return "//" + host + path;
-    }
-}
-
+////////////////////////////////////////
 ///////////////////////
 
 function startHostScheduler() {
@@ -594,8 +425,8 @@ function startHostScheduler() {
     var host = tr.attr("host");
 
     $.ajax({
-        url: getUrl('/api/Scheduler/StartScheduler', host),
-        data: { schId: currentScheduler.schId },
+        url: '/api/AllServer/StartHostScheduler',
+        data: { schId: currentScheduler.schId, host: host },
         type: 'post',
         dataType: "json",
         success: function (data) {
@@ -615,8 +446,8 @@ function stopHostScheduler() {
     var host = tr.attr("host");
 
     $.ajax({
-        url: getUrl('/api/Scheduler/ShutDown', host),
-        data: { schId: currentScheduler.schId },
+        url: '/api/AllServer/StopHostScheduler',
+        data: { schId: currentScheduler.schId, host: host },
         type: 'post',
         dataType: "json",
         success: function (data) {
@@ -630,15 +461,14 @@ function stopHostScheduler() {
     });
 
 }
-
 
 function killHostScheduler() {
     var self = $(this);
     var tr = self.parents("tr");
     var host = tr.attr("host");
     $.ajax({
-        url: getUrl('/api/Scheduler/KillProcess', host),
-        data: { schId: currentScheduler.schId },
+        url: '/api/AllServer/KillProcess',
+        data: { schId: currentScheduler.schId, host: host },
         type: 'post',
         dataType: "json",
         success: function (data) {
@@ -653,14 +483,12 @@ function killHostScheduler() {
 
 }
 
-
-
 function reviseHostScheduler() {
     var tr = $(this).parents("tr");
     var host = tr.attr("host");
     $.ajax({
-        url: getUrl('/api/Scheduler/Revise', host),
-        data: { schId: currentScheduler.schId },
+        url: '/api/AllServer/ReviseHostScheduler',
+        data: { schId: currentScheduler.schId, host: host },
         type: 'post',
         dataType: "json",
         success: function (data) {
@@ -688,13 +516,18 @@ function uploadHostScheduler() {
     var save = function () {
 
         $("#form1").ajaxSubmit({
-            url: getUrl('/api/Scheduler/UploadScheduler', host),
+            url: '/api/AllServer/UploadHostScheduler?host=' + host,
+            //data:{host:host},
+            error: function (xhr, textStatus, errorThrown) {
+                var msg = JSON.stringify(textStatus) + JSON.stringify(errorThrown);
+                showWarn("提示", msg);
+            },
             success: function (data) {
                 if (data.result) {
                     $("#modalUpload").modal("hide");
                 }
                 else {
-                    showWarn("更新失败");
+                    showWarn("提示", "更新失败");
                 }
             }
         });
@@ -708,32 +541,39 @@ function uploadHostScheduler() {
     });
 
 }
+
 ////////////////////
 
 function startAllHostScheduler() {
 
-    $("#tbAll button[cmdRevise]").each(function () {
-        var self = $(this);
-        startHostScheduler.call(self);
+    $.ajax({
+        url: "/api/AllServer/StartAllHostScheduler",
+        data: { schId: currentScheduler.schId, },
+        type: "post",
+        dataType: "json",
+        error: function () {
+        },
+        success: function (data) {
+            reviseAllHostScheduler();
+        }
     });
 }
 
 
 function stopAllHostScheduler() {
-
-    $("#tbAll button[cmdRevise]").each(function () {
-        var self = $(this);
-        stopHostScheduler.call(self);
+    $.ajax({
+        url: "/api/AllServer/StopAllHostScheduler",
+        data: { schId: currentScheduler.schId, },
+        type: "post",
+        dataType: "json",
+        error: function () {
+        },
+        success: function (data) {
+            reviseAllHostScheduler();
+        }
     });
 }
 
-function killAllHostScheduler() {
-
-    $("#tbAll button[cmdRevise]").each(function () {
-        var self = $(this);
-        killHostScheduler.call(self);
-    });
-}
 function reviseAllHostScheduler() {
 
     $("#tbAll button[cmdRevise]").each(function () {
@@ -754,19 +594,23 @@ function uploadAllHostScheduler() {
     var save = function () {
 
         $("#modalUpload").modal("hide");
-        $("#tbAll button[cmdRevise]").each(function () {
 
-            var self = $(this);
-            var tr = self.parents("tr");
-            var host = tr.attr("host")
-            $("#form1").ajaxSubmit({
-                url: getUrl('/api/Scheduler/UploadScheduler', host),
-                success: function (data) {
-                    if (data.result == false) {
-                        tr.find("td:eq(2)").addClass("alert-warning").text(data.msg);
+        var self = $(this);
+        var tr = self.parents("tr");
+        var host = tr.attr("host")
+        $("#form1").ajaxSubmit({
+            url: '/api/AllServer/UploadAllScheduler',
+            error: function (xhr, textStatus, errorThrown) {
+            },
+            success: function (data) {
+                $.each(data, function (i, item) {
+                    if (item.result == false) {
+
+                        $("#tbAll>tr[host='" + item.host + "']>td:eq(2)").addClass("alert-warning").text(data.msg);
                     }
-                }
-            });
+
+                })
+            }
         });
 
     };
@@ -777,3 +621,36 @@ function uploadAllHostScheduler() {
 
     });
 }
+
+
+
+//////////////////////////////////////////////////////////////////////////
+
+function showCallbackDefault(callback) {
+    if (callback.result) {
+        getAllScheduler();
+    } else {
+        showWarn("提示", callback.msg);
+    }
+}
+function showWarn(title, msg) {
+    $("#spanWarnTitle").text(title);
+    $("#divWarnMsg").text(msg);
+    $("#modalWarn").modal({
+        show: true,
+        keyboard: false
+    })
+}
+
+
+
+function showInfo(title, msg) {
+    $("#spanInfoTitle").text(title);
+    $("#divInfoMsg").text(msg);
+    $("#modalInfo").modal({
+        show: true,
+        keyboard: false
+    })
+}
+
+///////////////////////////////////////////////////////////////////////

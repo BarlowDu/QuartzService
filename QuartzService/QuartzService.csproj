@@ -52,6 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Container\JobObjectContainer.cs" />
     <Compile Include="DefaultJob.cs" />
     <Compile Include="DefaultJobListener.cs" />
     <Compile Include="DefaultSchedulerListener.cs" />
@@ -68,6 +69,10 @@
     <ProjectReference Include="..\QuartzService.Config\QuartzService.Config.csproj">
       <Project>{6afc5c19-95e8-4dae-a9f3-eaff090e1dc0}</Project>
       <Name>QuartzService.Config</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QuartzService.Log\QuartzService.Log.csproj">
+      <Project>{c61dbe29-d94f-45cd-972f-b0640b712a2e}</Project>
+      <Name>QuartzService.Log</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

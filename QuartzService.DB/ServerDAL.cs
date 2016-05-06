@@ -14,7 +14,7 @@ namespace QuartzService.DB
     {
         public IEnumerable<QuartzServerModel> GetAllServer()
         {
-            string sql = "select * from Quartz_Server";
+            string sql = "select * from Quartz_Server where IsEnable=1";
             SqlConnection conn = new SqlConnection(DBConnection.ConnectionString);
             SqlDataAdapter da = new SqlDataAdapter();
             da.SelectCommand = new SqlCommand(sql, conn);

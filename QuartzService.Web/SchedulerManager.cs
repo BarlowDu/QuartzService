@@ -21,7 +21,7 @@ namespace QuartzService.Web
         {
             get { return _instance; }
         }
-
+        List<string> hosts = new List<string>();
         List<SchedulerModel> schedulers = new List<SchedulerModel>();
         object objLock = new object();
 
@@ -29,8 +29,24 @@ namespace QuartzService.Web
         {
             get { return schedulers; }
         }
+        public IEnumerable<string> Hosts
+        {
+            get { return hosts; }
+        }
+
+        public void RefreshHost()
+        {
+            lock (objLock)
+            {
+
+                var dal = new ServerDAL();
+                var hosts = dal.GetAllServer();
+                this.hosts = hosts.Select(t => t.ServerName).ToList();
+            }
+        }
         public void InitSchedulers()
         {
+            RefreshHosts();
             lock (objLock)
             {
                 schedulers.AddRange(GetSchedulersFromDB());
@@ -38,6 +54,12 @@ namespace QuartzService.Web
             Revise();
         }
 
+        public void RefreshHosts()
+        {
+            ServerDAL sal = new ServerDAL();
+            var result = sal.GetAllServer();
+            hosts = result.Select(t => t.ServerName).ToList();
+        }
         public void StartScheduler(string rootPath, int schId)
         {
             lock (objLock)
@@ -54,7 +76,8 @@ namespace QuartzService.Web
                     ProcessStartInfo info = new ProcessStartInfo()
                     {
                         FileName = Path.Combine(rootPath, scheduler.Directory, scheduler.FileName),
-                        //WindowStyle = ProcessWindowStyle.Hidden
+                        WindowStyle = ProcessWindowStyle.Normal,
+                        CreateNoWindow = false
                     };
                     process.StartInfo = info;
                     process.Start();
@@ -120,6 +143,9 @@ namespace QuartzService.Web
         {
             lock (objLock)
             {
+                ServerDAL dal = new ServerDAL();
+                hosts = dal.GetAllServer().Select(t => t.ServerName).ToList();
+                schedulers = GetSchedulersFromDB();
                 foreach (var scheduler in schedulers)
                 {
                     ReviseScheduler(scheduler);
@@ -130,7 +156,7 @@ namespace QuartzService.Web
         public SchedulerModel ReviseScheduler(int schId)
         {
             var scheduler = schedulers.FirstOrDefault(t => t.SchedulerId == schId);
-            if (schId != null)
+            if (scheduler != null)
             {
                 return ReviseScheduler(scheduler);
             }

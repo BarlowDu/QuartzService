@@ -50,6 +50,10 @@
       <HintPath>..\packages\DotNetZip.1.9.8\lib\net20\Ionic.Zip.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -148,7 +152,8 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Api\SchedulerController.cs" />
+    <Compile Include="Api\AllServerController.cs" />
+    <Compile Include="Api\CurrentServerController.cs" />
     <Compile Include="App_Start\CustomerExceptionFilter.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
@@ -156,11 +161,17 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Log\LogHandler.cs" />
     <Compile Include="Models\CallbackModel.cs" />
+    <Compile Include="Models\HostCallbackModel.cs" />
     <Compile Include="Models\JobModel.cs" />
     <Compile Include="Models\ScheculerModel.cs" />
+    <Compile Include="Models\SchedulerCollection.cs" />
+    <Compile Include="Models\SchedulerDictionary.cs" />
     <Compile Include="Models\SchedulerStatus.cs" />
+    <Compile Include="Models\SchedulerWebApiModel.cs" />
     <Compile Include="Models\ServerViewModel.cs" />
+    <Compile Include="Models\Summary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SchedulerManager.cs" />
     <Compile Include="Utils\MultipartFormDataConverter.cs" />
@@ -170,6 +181,7 @@
     <Content Include="packages.config" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Home\AllScheduler.cshtml" />
+    <Content Include="Views\Home\Login.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -7,8 +7,11 @@ using QuartzService.Web.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 
@@ -21,103 +24,16 @@ namespace QuartzService.Web.Controllers
         {
             return View();
         }
+
+
+
+
+
         public ActionResult AllScheduler()
         {
             return View();
         }
 
-        #region Obsolete
-
-        //[HttpPost]
-        //public ActionResult ShutDown(int schId)
-        //{
-        //    try
-        //    {
-        //        SchedulerManager.Instance.ShutDownScheduler(schId);
-
-        //        return Json(new CallbackModel(true));
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return Json(new CallbackModel(false, ex.Message));
-        //    }
-        //}
-
-
-        //[HttpPost]
-        //public ActionResult StartScheduler(int schId)
-        //{
-        //    try
-        //    {
-        //        SchedulerManager.Instance.StartScheduler(this.HttpContext.Server.MapPath("~"), schId);
-        //        return Json(new CallbackModel(true));
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return Json(new CallbackModel(false, ex.Message));
-        //    }
-        //}
-
-
-
-        //[HttpPost]
-        //public ActionResult UploadApplication(int schId)
-        //{
-        //    try
-        //    {
-        //        var file = Request.Files[0];
-        //        SchedulerModel scheduler = SchedulerManager.Instance.Schedulers.FirstOrDefault(t => t.SchedulerId == schId);
-        //        if (scheduler != null)
-        //        {
-        //            string dir = HttpContext.Server.MapPath("~/" + scheduler.Directory);
-        //            string fileName = string.Format("{0}-{1:yyyyMMddHHmmss}.zip", scheduler.SchedulerName, DateTime.Now);
-        //            string fileFullName = Path.Combine(dir, fileName);
-        //            if (Directory.Exists(dir) == false)
-        //            {
-        //                Directory.CreateDirectory(dir);
-        //            }
-        //            byte[] buffer = new byte[file.InputStream.Length];
-        //            file.InputStream.Read(buffer, 0, buffer.Length);
-
-        //            using (var fs = new FileStream(fileFullName, FileMode.OpenOrCreate, FileAccess.Write))
-        //            {
-        //                fs.Write(buffer, 0, buffer.Length);
-        //            }
-
-        //            using (ZipFile zip1 = ZipFile.Read(fileFullName))
-        //            {
-        //                foreach (ZipEntry e in zip1)
-        //                {
-        //                    e.Extract(dir, ExtractExistingFileAction.OverwriteSilently);
-        //                }
-        //            }
-
-        //        }
-        //        return Json(new CallbackModel(true));
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return Json(new CallbackModel(false, ex.Message));
-        //    }
-        //}
-
-        #endregion
-
-
-        [HttpPost]
-        public ActionResult Revise()
-        {
-            try
-            {
-                SchedulerManager.Instance.Revise();
-                return Json(new CallbackModel(true));
-            }
-            catch (Exception ex)
-            {
-
-                return Json(new CallbackModel(false, ex.Message));
-            }
-        }
 
         [HttpPost]
         public ActionResult ReloadScheduler()
@@ -133,48 +49,10 @@ namespace QuartzService.Web.Controllers
             }
         }
 
-        [HttpPost]
-        public ActionResult KillProcess(int schId)
+        public ActionResult Get()
         {
-            try
-            {
-                SchedulerManager.Instance.KillProcess(schId);
-                return Json(new CallbackModel(true));
-            }
-            catch (Exception ex)
-            {
-                return Json(new CallbackModel(false, ex.Message));
-            }
+            return Json(SchedulerManager.Instance.Schedulers, JsonRequestBehavior.AllowGet);
         }
-        [HttpPost]
-        public ActionResult PauseJob(int schId, string groupName, string jobName)
-        {
-            try
-            {
-                SchedulerManager.Instance.PauseJob(schId, groupName, jobName);
-                return Json(new CallbackModel(true));
-            }
-            catch (Exception ex)
-            {
-
-                return Json(new CallbackModel(false, ex.Message));
-            }
-        }
-
-        [HttpPost]
-        public ActionResult ResumeJob(int schId, string groupName, string jobName)
-        {
-            try
-            {
-                SchedulerManager.Instance.ResumeJob(schId, groupName, jobName);
-                return Json(new CallbackModel(true));
-            }
-            catch (Exception ex)
-            {
-                return Json(new CallbackModel(false, ex.Message));
-            }
-        }
-
 
         public ActionResult GetAllSchedulerData()
         {
@@ -197,17 +75,34 @@ namespace QuartzService.Web.Controllers
         public ActionResult SaveScheduler(QuartzSchedulerModel model)
         {
             bool success = true;
+            CallbackModel result;
             var dal = new SchedulerDAL();
-            if (model.SchedulerId <= 0)
+            try
             {
-                success = dal.AddScheduler(model);
+                if (dal.CheckSchedulerNameExists(model.SchedulerName, model.SchedulerId))
+                {
+                    return Json(new CallbackModel(false, "SchedulerName必须唯一"));
+                }
+                if (model.SchedulerId <= 0)
+                {
+                    success = dal.AddScheduler(model);
+                }
+                else
+                {
+                    success = dal.UpdateScheduler(model);
+                }
+                string msg = "保存成功";
+                if (success == false)
+                {
+                    msg = "保存失败";
+                }
+                return Json(new CallbackModel(success, msg));
+
             }
-            else
+            catch (Exception ex)
             {
-                success = dal.UpdateScheduler(model);
+                return Json(new CallbackModel(success, ex.Message));
             }
-            CallbackModel result = new CallbackModel(success);
-            return Json(result);
         }
 
         public ActionResult GetAllServer()

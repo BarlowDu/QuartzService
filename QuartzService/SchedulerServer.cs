@@ -2,6 +2,8 @@
 using Quartz.Impl;
 using Quartz.Impl.Matchers;
 using QuartzService.Config;
+using QuartzService.Container;
+using QuartzService.Log;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +25,10 @@ namespace QuartzService
             Scheduler = factory.GetScheduler();
             foreach (var j in jobConfigs)
             {
+
                 var jConfig = (j as ServiceJobElement);
+                object jobObj = Activator.CreateInstance(Type.GetType(jConfig.Type));
+                JobObjectContainer.Set(jConfig.Name, jobObj);
                 string jobName = jConfig.Name;
                 string triggerName = jobName + "_trigger";
                 string cron = jConfig.Cron;
@@ -63,11 +68,30 @@ namespace QuartzService
         {
             InitScheduler();
             Scheduler.Start();
+
+            LogHandler.Info("Scheduler 开始运行");
         }
 
         public virtual void Shutdown()
         {
-            Console.WriteLine("Shutdowned");
+            Action<System.Collections.DictionaryEntry> action = (kv) =>
+            {
+                if (kv.Value != null)
+                {
+                    Type type = kv.Value.GetType();
+                    if (typeof(IDisposable).IsAssignableFrom(type))
+                    {
+                        IDisposable obj = (kv.Value as IDisposable);
+                        obj.Dispose();
+                        Console.WriteLine("Dispose");
+                    }
+                }
+
+            };
+
+            JobObjectContainer.Clear(action);
+
+            LogHandler.Info("Scheduler 停止运行");
         }
 
 
