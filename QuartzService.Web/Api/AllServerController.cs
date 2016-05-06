@@ -89,7 +89,7 @@ namespace QuartzService.Web.Api
         {
             SchedulerDictionary result = new SchedulerDictionary();
 
-            SchedulerManager.Instance.RefreshHost();
+            SchedulerManager.Instance.RefreshHosts();
             var dal = new SchedulerDAL();
             var schedulers = dal.GetAllScheduler();
             foreach (var s in schedulers)

@@ -34,16 +34,7 @@ namespace QuartzService.Web
             get { return hosts; }
         }
 
-        public void RefreshHost()
-        {
-            lock (objLock)
-            {
 
-                var dal = new ServerDAL();
-                var hosts = dal.GetAllServer();
-                this.hosts = hosts.Select(t => t.ServerName).ToList();
-            }
-        }
         public void InitSchedulers()
         {
             RefreshHosts();
