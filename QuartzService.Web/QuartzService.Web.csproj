@@ -135,6 +135,7 @@
     <Content Include="bootstrap-3.3.5-dist\js\bootstrap.js" />
     <Content Include="bootstrap-3.3.5-dist\js\bootstrap.min.js" />
     <Content Include="bootstrap-3.3.5-dist\js\npm.js" />
+    <Content Include="DB\QuartzService.sql" />
     <Content Include="Global.asax" />
     <Content Include="bootstrap-3.3.5-dist\css\bootstrap-theme.css.map" />
     <Content Include="bootstrap-3.3.5-dist\css\bootstrap.css.map" />
